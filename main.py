@@ -32,7 +32,7 @@ async def analyze_eeg(file: UploadFile = File(...)):
         
         base64_image = encode_image(image)
         
-        prompt = "Ты можешь писать только True или False, есть ли у человека стресс?"
+        prompt = "Ты можешь писать только True или False, короткое обьяснение, Time frame результатов, и значения Альфа и Бета ритмов, есть ли у человека стресс?"
         messages = [
             {"role": "system", "content": "Ты должен написать либо True если у человека стресс, либо False если у него нету стресса"},
             {"role": "user", "content":[{"type": "text", "text": prompt}, {"type": "image_url", "image_url": {"url":f"data:image/jpeg;base64,{base64_image}"}}]}
