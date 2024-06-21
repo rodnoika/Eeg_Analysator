@@ -21,7 +21,7 @@ function App() {
     setError("");
 
     try {
-      const response = await fetch('http://localhost:8000/analyze-eeg/', {
+      const response = await fetch('http://157.230.23.55:8000/analyze-eeg/', { 
         method: 'POST',
         body: formData,
       });

@@ -1,13 +1,14 @@
+import openai
 import base64
-from openai import OpenAI
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Настройка CORS
 origins = [
-    "http://localhost:5173",  
+    "http://157.230.23.55:5173",
 ]
 
 app.add_middleware(
@@ -18,9 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = OpenAI(
-    api_key="sk-org-uiupjxtl6nhsahmjscumzjdi-e6xVWysw9O3rAOrTJQwET3BlbkFJg0Xy3rI9eHB7YKDoXGaz",
-)
+openai.api_key = "ваш ключ API OpenAI"
 
 def encode_image(image):
     return base64.b64encode(image).decode('utf-8')
@@ -32,20 +31,21 @@ async def analyze_eeg(file: UploadFile = File(...)):
         
         base64_image = encode_image(image)
         
-        prompt = "Ты можешь писать только True или False, короткое обьяснение, Time frame результатов, и значения Альфа и Бета ритмов, есть ли у человека стресс?"
+        prompt = "Напиши состояния человека и цифры значений ритм."
         messages = [
-            {"role": "system", "content": "Ты должен написать либо True если у человека стресс, либо False если у него нету стресса"},
-            {"role": "user", "content":[{"type": "text", "text": prompt}, {"type": "image_url", "image_url": {"url":f"data:image/jpeg;base64,{base64_image}"}}]}
+            {"role": "system", "content": "Ты профессионал в области нейрофизиологии и главный анализатор диаграм спектрального анализа мозговой активности, который может дать точный анализ данных ЭЭГ, ты разделяешь график на тайм фреймы, и на каждый тайм фрейм пишешь точные значения с числами Альфа, Бета, Тета ритмы"},
+            {"role": "user", "content": prompt},
+            {"role": "user", "content": f"data:image/jpeg;base64,{base64_image}"}
         ]
-        #Ты профессионал в области нейрофизиологии и главный анализатор диаграм спектрального анализа мозговой активности, пишешь только самочуствие и состояние человека, и не пиши воду, и под конец ты должен сделать итог находится ли человек в Стрессе или нет
         
-        response = client.chat.completions.create(
-            model="gpt-4o",
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
             messages=messages,
-            max_tokens=500,
+            max_tokens=500,  
+            temperature=0.7
         )
         
-        result = response.choices[0].message.content
+        result = response['choices'][0]['message']['content'].strip()
         
         return JSONResponse(content={"analysis": result})
     except Exception as e:
