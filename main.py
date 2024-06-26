@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 client = OpenAI(
-    api_key="sk-org-uiupjxtl6nhsahmjscumzjdi-e6xVWysw9O3rAOrTJQwET3BlbkFJg0Xy3rI9eHB7YKDoXGaz",
+    api_key="Your API",
 )
 
 def encode_image(image):
